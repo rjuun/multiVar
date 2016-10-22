@@ -35,7 +35,9 @@ henkel_sd
 
 # from every observation, now we extract the mu and divide by sd
 std_henkel <- (returns$henkel - henkel_mu)/henkel_sd
-std_henkel
+henkel <- cbind(henkel,std_henkel)
+
+
 
 # just to check, one can test the mean and sd of the std variable
 mean(std_henkel)
@@ -43,16 +45,16 @@ sd(std_henkel)
 
 # calculate the degrees of freedom
 #need to come back here for the procedure
-v <- 10
+v <- 14
 
 tdist_henkel <- (
-  lgamma( (v+1) / 2 ) / ( sqrt( (v-2) * pi * ( v/2) ) ) 
-  * (1 + ( (std_henkel^2) / (v-2) ) ) ^ ( (-v+1) / 2 )
+  lgamma( (v+1) / 2 ) - 0.5 * log( ( (v-2) * pi ) - lgama(( v/2) ) ) 
+  - 0.5 * log(1 + ( (std_henkel^2) / (v-2) ) ) ^ -( (v+1) / 2 )
 )
 
-tdist_henkel <- as.data.frame(tdist_henkel)
+henkel <- cbind(henkel, tdist_henkel)
 
-g <- ggplot(tdist_henkel, aes(x = tdist_henkel)) + geom_histogram(fill= "salmon", colour
+g <- ggplot(henkel, aes(x = tdist_henkel)) + geom_histogram(fill= "salmon", colour
                                                                  = "white", binwidth=0.01)
 
 g
@@ -64,3 +66,21 @@ g
   
   
   # find the estimates of the mean by the method of movements
+  
+  
+  ================
+  cov(returns)
+===================
+  # create matrix 1 x Mean(i)
+  
+returns <- cbind(returns, 1)
+M1 <- c(1,1,1)
+t(M1)
+M1 <- t(M1)
+M1
+MEAN <- t(as.matrix(c(mean(returns$eon), mean(returns$henkel), mean(returns$siemens))))
+MEAN
+M1
+M_mean <- M1 %*% (MEAN)
+M_mean
+
